@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Modern Portfolio</title>
+<style>
+  /* ========== Variables & Reset ========== */
+  :root{
+    --bg:#0f1724;
+    --card:#0b1220;
+    --muted:#9aa4b2;
+    --accent:#4f46e5;
+    --accent-2:#06b6d4;
+    --glass: rgba(255,255,255,0.03);
+    --radius:12px;
+    --max-width:1100px;
+    --ease:cubic-bezier(.2,.9,.3,1);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(79,70,229,0.08), transparent),
+                linear-gradient(180deg,#071025 0%, var(--bg) 100%);
+    color:#e6eef7;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.45;
+  }
+
+  /* ========== Layout ========== */
+  .wrap{
+    max-width:var(--max-width);
+    margin:28px auto;
+    padding:28px;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:24px;
+  }
+
+  .brand{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    text-decoration:none;
+    color:inherit;
+  }
+  .logo{
+    width:48px;height:48px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:grid;place-items:center;font-weight:700;color:white;
+    box-shadow:0 6px 18px rgba(79,70,229,0.16);
+    flex-shrink:0;
+  }
+  .brand h1{font-size:18px;margin:0}
+  .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+  nav.desktop{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  nav.desktop a{
+    color:var(--muted);
+    text-decoration:none;
+    padding:8px 12px;border-radius:10px;
+    transition:all .22s var(--ease);
+    font-weight:600;font-size:14px;
+  }
+  nav.desktop a:hover{color:white;background:var(--glass);transform:translateY(-2px)}
+
+  /* Mobile nav button */
+  .menu-btn{
+    display:none;
+    background:transparent;border:none;color:var(--muted);
+    padding:8px;border-radius:8px;
+  }
+
+  /* ========== Hero ========== */
+  .hero{
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:28px;
+    align-items:center;
+    margin-bottom:36px;
+  }
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow: 0 8px 30px rgba(2,6,23,0.6), inset 0 1px rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  .intro h2{
+    margin:0 0 8px 0;
+    font-size:28px;
+    letter-spacing:-0.02em;
+    line-height:1.05;
+    color:linear-gradient;
+    transform-origin:left;
+    animation:slideIn .7s var(--ease);
+  }
+  .intro p{margin:0 0 14px 0;color:var(--muted);font-size:15px}
+
+  .cta-row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    border:none;color:white;padding:10px 14px;border-radius:10px;
+    cursor:pointer;font-weight:600;font-size:14px;transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+    box-shadow:0 8px 20px rgba(79,70,229,0.14);
+  }
+  .btn.secondary{
+    background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);
+  }
+  .btn:active{transform:translateY(2px)}
+
+  .profile{
+    text-align:center;padding:18px;
+  }
+  .avatar{
+    width:140px;height:140px;border-radius:20px;overflow:hidden;margin:0 auto 12px;
+    border:1px solid rgba(255,255,255,0.04);
+    box-shadow:0 12px 30px rgba(2,6,23,0.6);
+  }
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .profile h3{margin:6px 0 0 0;font-size:18px}
+  .profile p{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+
+  /* ========== Sections ========== */
+  .sections{display:grid;grid-template-columns:1fr 360px;gap:28px}
+  .about, .projects, .contact { }
+  .about p{color:var(--muted);margin-top:8px}
+
+  /* Skills list */
+  .skills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .skill{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    padding:8px 10px;border-radius:10px;font-size:13px;color:var(--muted);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  /* Projects grid */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:16px;
+    margin-top:14px;
+  }
+  .project{
+    border-radius:12px;overflow:hidden;position:relative;
+    transition:transform .28s var(--ease), box-shadow .28s var(--ease);
+    cursor:pointer;border:1px solid rgba(255,255,255,0.03);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  }
+  .project:hover{transform:translateY(-8px);box-shadow:0 18px 50px rgba(2,6,23,0.6)}
+  .project .thumb{height:140px;overflow:hidden}
+  .project img{width:100%;height:100%;object-fit:cover;display:block}
+  .project .meta{padding:12px}
+  .project h4{margin:0 0 6px 0;font-size:15px}
+  .project p{margin:0;color:var(--muted);font-size:13px}
+
+  /* Sidebar (contact / socials) */
+  .side{
+    display:flex;flex-direction:column;gap:12px;
+    position:sticky;top:24px;
+  }
+  .contact-card{display:flex;flex-direction:column;gap:8px}
+  .socials{display:flex;gap:8px;flex-wrap:wrap}
+  .socials a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,0.02);color:var(--muted);text-decoration:none;font-weight:600;font-size:13px;border:1px solid rgba(255,255,255,0.03)}
+  .socials a:hover{color:white;transform:translateY(-3px)}
+
+  /* Footer */
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px;padding:24px 0}
+
+  /* ========== Animations ========== */
+  @keyframes slideIn {
+    from{opacity:0; transform:translateY(8px)}
+    to{opacity:1; transform:translateY(0)}
+  }
+  @keyframes float {
+    0% { transform:translateY(0) }
+    50% { transform:translateY(-6px) }
+    100% { transform:translateY(0) }
+  }
+  .avatar{animation:float 6s ease-in-out infinite}
+
+  /* ========== Responsive ========== */
+  @media (max-width:1000px){
+    .hero,.sections{grid-template-columns:1fr}
+    .profile{order:2}
+    .side{position:static}
+  }
+  @media (max-width:680px){
+    .wrap{padding:18px;margin:18px auto}
+    .grid{grid-template-columns:1fr}
+    .menu-btn{display:inline-flex}
+    nav.desktop{display:none}
+    header{align-items:flex-start;gap:8px}
+    .brand h1{font-size:16px}
+    .brand p{display:none}
+  }
+  /* Accessibility focus */
+  a:focus, button:focus { outline:2px dashed rgba(79,70,229,0.32); outline-offset:3px }
+</style>
+</head>
+<body>
+  <div class="wrap" id="top">
+    <header>
+      <a class="brand" href="#top" aria-label="Go to top">
+        <span class="logo">MJ</span>
+        <div>
+          <h1>Max Johnson</h1>
+          <p>Frontend Engineer • Designer</p>
+        </div>
+      </a>
+
+      <nav class="desktop" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" title="Toggle menu">
+        ☰
+      </button>
+    </header>
+
+    <!-- Mobile Menu -->
+    <nav id="mobileMenu" style="display:none;margin-bottom:16px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <a href="#about" style="color:var(--muted);text-decoration:none;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)">About</a>
+        <a href="#projects" style="color:var(--muted);text-decoration:none;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)">Projects</a>
+        <a href="#skills" style="color:var(--muted);text-decoration:none;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)">Skills</a>
+        <a href="#contact" style="color:var(--muted);text-decoration:none;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02)">Contact</a>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" aria-label="Introduction">
+      <div class="card intro" style="padding-right:18px">
+        <h2>Hi, I’m Max — I build delightful web experiences.</h2>
+        <p>I craft modern, accessible interfaces and delightful micro-interactions. I work primarily with React, Typescript, and CSS-in-JS.</p>
+
+        <div class="cta-row">
+          <a class="btn" href="#projects">View Projects</a>
+          <a class="btn secondary" href="#contact">Hire Me</a>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column">
+            <small style="color:var(--muted)">Location</small>
+            <strong>San Francisco, CA</strong>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <small style="color:var(--muted)">Experience</small>
+            <strong>6 yrs</strong>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <small style="color:var(--muted)">Available</small>
+            <strong>Freelance</strong>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card profile" aria-label="Profile">
+        <div class="avatar" aria-hidden="true">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=3b3b77f1f6b1b5e7b155a5b7db2f2ab3" alt="Portrait of Max">
+        </div>
+        <h3>Max Johnson</h3>
+        <p class="muted">Front-end Engineer & Product Designer</p>
+
+        <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+          <a class="btn" href="#contact" style="padding:8px 10px;font-size:13px">Contact</a>
+          <a class="btn secondary" href="mailto:max@example.com" style="padding:8px 10px;font-size:13px">Email</a>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Main sections -->
+    <section class="sections" aria-label="Main content">
+      <main>
+        <!-- About -->
+        <article id="about" class="card about" style="margin-bottom:18px">
+          <h3 style="margin-top:0">About</h3>
+          <p>I'm a front-end developer who loves turning complex problems into simple, beautiful, and intuitive interfaces. I focus on performance, accessibility, and delightful micro-interactions.</p>
+          <p style="margin-top:12px;color:var(--muted)">Currently building UI components and design systems. I enjoy mentoring, pairing on architecture, and contributing to open-source tooling.</p>
+        </article>
+
+        <!-- Projects -->
+        <article id="projects" class="card projects">
+          <h3 style="margin-top:0">Selected Projects</h3>
+          <div class="grid" aria-live="polite">
+            <section class="project" tabindex="0" role="article" aria-label="Project: Dashboard UI">
+              <div class="thumb"><img src="https://images.unsplash.com/photo-1526378724410-6c6d7a6b1f1a?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=5605c8ea2a7d3b2d90b1eecd6b440d1d" alt="Dashboard screenshot"></div>
+              <div class="meta"><h4>Design System / Dashboard</h4><p>Design system, component library and an analytics dashboard for a fintech client.</p></div>
+            </section>
+
+            <section class="project" tabindex="0" role="article" aria-label="Project: E‑Commerce">
+              <div class="thumb"><img src="https://images.unsplash.com/photo-1532614338840-ab30cf10ed20?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=5b6a1f0ef4b8a3e9b6f6b4f6a8b8c0d1" alt="Ecommerce screenshot"></div>
+              <div class="meta"><h4>E‑Commerce Redesign</h4><p>Performance-focused rebuild with a11y improvements and a modern product experience.</p></div>
+            </section>
+
+            <section class="project" tabindex="0" role="article" aria-label="Project: Marketing site">
+              <div class="thumb"><img src="https://images.unsplash.com/photo-1509395176047-4a66953fd231?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=0b8de1fc5b3c2b2d6d3b3e0d7f9a3a1a" alt="Marketing screenshot"></div>
+              <div class="meta"><h4>Marketing Site</h4><p>Fast, SEO-friendly landing pages with tailored microcopy and lead capture.</p></div>
+            </section>
+
+            <section class="project" tabindex="0" role="article" aria-label="Project: Design Tool">
+              <div class="thumb"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=7d8a6ad9b7f3c8c7b6e5f6a4d3b2c1f2" alt="Tool screenshot"></div>
+              <div class="meta"><h4>Design Tooling</h4><p>Prototyping and tooling that improved designer-developer handoffs and reduced iteration time.</p></div>
+            </section>
+          </div>
+        </article>
+
+        <!-- Contact -->
+        <article id="contact" class="card contact" style="margin-top:18px">
+          <h3 style="margin-top:0">Get in touch</h3>
+          <p style="color:var(--muted)">Interested in working together? I'm available for freelance and contract work. Fill out the simple form or email me directly.</p>
+
+          <form style="margin-top:12px;display:grid;gap:8px" action="mailto:max@example.com" method="post" enctype="text/plain" onsubmit="alert('This demo form opens your email client. Replace with a backend endpoint for production.');">
+            <input name="name" type="text" placeholder="Your name" required style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
+            <input name="email" type="email" placeholder="Your email" required style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit" />
+            <textarea name="message" rows="4" placeholder="Message" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit"></textarea>
+            <div style="display:flex;gap:8px">
+              <button class="btn" type="submit">Send</button>
+              <button type="reset" class="btn secondary">Clear</button>
+            </div>
+          </form>
+        </article>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="side">
+        <div class="card contact-card">
+          <strong>Contact</strong>
+          <div style="color:var(--muted);font-size:13px">max@example.com</div>
+          <div style="color:var(--muted);font-size:13px">+1 (555) 123‑4567</div>
+        </div>
+
+        <div class="card">
+          <strong>Skills</strong>
+          <div id="skills" class="skills">
+            <span class="skill">React</span>
+            <span class="skill">TypeScript</span>
+            <span class="skill">Tailwind / CSS</span>
+            <span class="skill">Design Systems</span>
+            <span class="skill">Accessibility</span>
+            <span class="skill">Performance</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <strong>Social</strong>
+          <div class="socials">
+            <a href="#" aria-label="GitHub">GitHub</a>
+            <a href="#" aria-label="LinkedIn">LinkedIn</a>
+            <a href="#" aria-label="Twitter">Twitter</a>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> Max Johnson — Built with care • <a href="#top" style="color:var(--muted);text-decoration:none">Back to top ↑</a></div>
+    </footer>
+  </div>
+
+<script>
+  // Small interactive JS: mobile menu toggle, smooth scroll, current year
+  (function(){
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const open = mobileMenu.style.display !== 'none';
+      mobileMenu.style.display = open ? 'none' : 'block';
+      menuBtn.setAttribute('aria-expanded', String(!open));
+    });
+
+    // Smooth in-page scrolling for modern browsers
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const target = document.querySelector(a.getAttribute('href'));
+        if(target){ e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
+      });
+    });
+
+    // Fill year
+    const y = new Date().getFullYear();
+    document.getElementById('year').textContent = y;
+
+    // Lightweight lazy-loading replacement for images (progressive reveal)
+    document.querySelectorAll('img').forEach(img=>{
+      img.loading = 'lazy';
+      img.addEventListener('load', ()=> img.style.opacity = '1');
+      img.style.opacity = '0.95';
+      img.style.transition = 'opacity .6s ease';
+    });
+  })();
+</script>
+</body>
+</html>
